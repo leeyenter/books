@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@tanstack/vue-query": "^4.29.5",
@@ -15,12 +17,15 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
+    "@vue/test-utils": "^2.3.2",
     "autoprefixer": "^10.4.14",
+    "nock": "^13.3.1",
     "postcss": "^8.4.23",
     "prettier": "^2.8.8",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.0.2",
     "vite": "^4.3.2",
+    "vitest": "^0.31.0",
     "vue-tsc": "^1.4.2"
   }
 }

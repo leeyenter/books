@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getBooksQuery } from "../api/api.ts";
-import BooksTable from "./BooksTable.vue";
+import BooksTable from "../components/BooksTable.vue";
 
 const { isLoading, isError, data, error } = getBooksQuery();
 </script>
