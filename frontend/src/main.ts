@@ -4,10 +4,14 @@ import { VueQueryPlugin } from "@tanstack/vue-query";
 import "./style.css";
 import App from "./App.vue";
 import MainView from "./views/MainView.vue";
+import NewBookView from "./views/NewBookView.vue";
 
-const router = createRouter({
+export const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: "/", component: MainView }],
+  routes: [
+    { path: "/", component: MainView },
+    { path: "/new", component: NewBookView },
+  ],
 });
 
 const app = createApp(App);

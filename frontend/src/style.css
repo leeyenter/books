@@ -7,3 +7,11 @@
 body, html {
     font-family: Poppins, Futura, sans-serif;
 }
+
+h1 {
+    @apply font-bold text-3xl;
+}
+
+input[type=text] {
+    @apply border-b-2 border-blue-500;
+}
