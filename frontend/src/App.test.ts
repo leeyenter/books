@@ -12,7 +12,11 @@ describe("App", () => {
       },
     });
 
-  it.todo("displays table");
+  it("displays table", async () => {
+    const app = wrapper();
+    await flushPromises();
+    expect(app.text()).toContain("A Long Obedience");
+  });
 
   it("can navigate to new book form", async () => {
     const app = wrapper();
