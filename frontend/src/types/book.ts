@@ -23,7 +23,7 @@ export const mockBook = (overrides: Partial<Book> = {}) => {
         Logos: faker.datatype.number({ min: 1_00, max: 100_00 }),
       },
       readStatus: faker.helpers.arrayElement([
-        "Unstarted",
+        "Not started",
         "In progress",
         "Completed",
       ]),

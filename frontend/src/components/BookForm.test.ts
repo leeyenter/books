@@ -1,31 +1,82 @@
 import { Book, mockBook } from "../types/book.ts";
 import BookForm from "./BookForm.vue";
-import { mount, VueWrapper } from "@vue/test-utils";
+import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
+import { beforeEach, expect } from "vitest";
 
 class FormObj {
   constructor(private app: VueWrapper) {}
 
-  setInputValue(label: string, value: string) {
-    this.app.find({ ref: label }).setValue(value);
+  private input(label: string): DOMWrapper<HTMLInputElement> {
+    const input = this.app.find(`[aria-label="${label}"]`);
+    expect(
+      input.exists(),
+      `Input element with ref ${label} not found`
+    ).toBeTruthy();
+    return input as DOMWrapper<HTMLInputElement>;
+  }
+
+  private button(text: RegExp) {
+    const button = this.app.findAll("button").find((x) => x.text().match(text));
+    expect(button?.exists(), `Expected button with text ${text}`).toBeTruthy();
+    return button!;
   }
 
   get authorInputs() {
     return this.app.findAll('[data-test="author"]');
   }
 
+  get priceInputs() {
+    return this.app.findAll('[data-test="price"]');
+  }
+
+  async setInputValue(label: string, value: string) {
+    const input = this.input(label);
+    return input.setValue(value);
+  }
+
+  async setTitleInput(value: string) {
+    return this.setInputValue("Book title", value);
+  }
+
+  expectInputValue(label: string, value: string) {
+    const input = this.input(label);
+    expect(input.element.value).toEqual(value);
+  }
+
   async clickAddAuthor() {
-    const addAuthorButton = this.app
-      .findAll("button")
-      .find((x) => x.text().match(/Add author/));
-    expect(addAuthorButton).toBeTruthy();
-    await addAuthorButton!.trigger("click");
+    const addAuthorButton = this.button(/Add author/);
+    await addAuthorButton.trigger("click");
+  }
+
+  expectPrice(location: string, price: string) {
+    const priceDiv = this.app.find(`[aria-label="price for ${location}"]`);
+    expect(priceDiv.exists(), `Expected price for ${location}`).toBeTruthy();
+    expect(priceDiv.text()).toContain(location);
+    expect(priceDiv.find("input").element.value).toEqual(price);
+  }
+
+  async clickAddPrice() {
+    const addPriceBtn = this.button(/Add price/);
+    await addPriceBtn.trigger("click");
+  }
+
+  expectFESLibraryValue(value: string) {
+    const select = this.app.find(
+      '[aria-label="FES library"]'
+    ) as DOMWrapper<HTMLSelectElement>;
+    expect(select.element.value).toEqual(value);
+  }
+
+  async clickSubmit() {
+    const addBookBtn = this.button(/Add book/);
+    await addBookBtn.trigger("click");
   }
 }
 
 describe("Book Form", () => {
-  const wrapper = (book: Book) =>
+  const wrapper = (book: Book, locations: string[] = []) =>
     mount(BookForm, {
-      props: { book },
+      props: { book, locations },
     });
 
   it('displays "New book" when passing in with empty props', () => {
@@ -40,10 +91,11 @@ describe("Book Form", () => {
     expect(app.text()).toContain("Title");
   });
 
-  it("can edit the title", () => {
+  it("can edit the title", async () => {
     const app = wrapper({ id: "", title: "", authors: [] });
     const form = new FormObj(app);
-    form.setInputValue("title", "new title here");
+    await form.setTitleInput("new title here");
+    form.expectInputValue("Book title", "new title here");
   });
 
   describe("authors", () => {
@@ -68,6 +120,101 @@ describe("Book Form", () => {
       const form = new FormObj(app);
       await form.clickAddAuthor();
       expect(form.authorInputs).toHaveLength(1);
+    });
+  });
+
+  describe("prices", () => {
+    let app: VueWrapper;
+    let form: FormObj;
+
+    beforeEach(() => {
+      app = wrapper(
+        mockBook({
+          prices: {
+            Logos: 1234,
+            Kindle: 850,
+          },
+        }),
+        ["SKS", "BD"]
+      );
+
+      form = new FormObj(app);
+    });
+
+    it("displays existing prices", () => {
+      form.expectPrice("Logos", "12.34");
+      form.expectPrice("Kindle", "8.50");
+    });
+
+    it("can edit existing prices", async () => {
+      await form.setInputValue("Price at Logos", "1.00");
+      form.expectPrice("Logos", "1.00");
+    });
+
+    it("displays existing categories", () => {
+      form.expectPrice("SKS", "");
+      form.expectPrice("BD", "");
+    });
+
+    describe("adding a price for a new location", () => {
+      it("can add a new location", async () => {
+        await form.setInputValue("New price location", "My New Location");
+        await form.clickAddPrice();
+        expect(form.priceInputs).toHaveLength(5);
+        form.expectInputValue("New price location", "");
+        form.expectPrice("My New Location", "");
+      });
+
+      it("does not add a new price with an empty location", async () => {
+        expect(form.priceInputs).toHaveLength(4);
+        await form.clickAddPrice();
+        expect(form.priceInputs).toHaveLength(4);
+      });
+
+      it("does not add an existing location", async () => {
+        expect(form.priceInputs).toHaveLength(4);
+        await form.setInputValue("New price location", "Logos");
+        await form.clickAddPrice();
+        expect(form.priceInputs).toHaveLength(4);
+        form.expectPrice("Logos", "12.34");
+      });
+    });
+  });
+
+  describe("library selection", () => {
+    it.each([
+      { data: undefined, value: "Not checked" },
+      { data: true, value: "true" },
+      { data: false, value: "false" },
+    ])(
+      "correctly maps data to select option when initialising component %s",
+      ({ data, value }) => {
+        const app = wrapper({
+          id: "",
+          title: "",
+          authors: [],
+          fesLibrary: data,
+        });
+        const form = new FormObj(app);
+        form.expectFESLibraryValue(value);
+      }
+    );
+  });
+
+  describe("submit", () => {
+    it("can create new book", async () => {
+      const app = wrapper({ id: "", title: "", authors: [""] });
+      const form = new FormObj(app);
+      await form.setTitleInput("Preaching");
+      await form.setInputValue("Author 1", "Tim Keller");
+      await form.setInputValue("New price location", "SKS");
+      await form.clickAddPrice();
+      await form.setInputValue("Price at SKS", "24.30");
+
+      // TODO: set library status
+
+      await form.clickSubmit();
+      // expect form
     });
   });
 });
