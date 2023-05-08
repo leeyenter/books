@@ -5,12 +5,14 @@ import "./style.css";
 import App from "./App.vue";
 import MainView from "./views/MainView.vue";
 import NewBookView from "./views/NewBookView.vue";
+import EditBookView from "./views/EditBookView.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component: MainView },
     { path: "/new", component: NewBookView },
+    { path: "/edit/:id", component: EditBookView },
   ],
 });
 

@@ -24,6 +24,7 @@ const locations = getBookPriceLocations(props.books);
         <th>FES Library</th>
         <th>Owned</th>
         <th>Status</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -41,6 +42,12 @@ const locations = getBookPriceLocations(props.books);
         </td>
         <td aria-label="owned">{{ book.boughtType ?? "-" }}</td>
         <td aria-label="status">{{ book.readStatus }}</td>
+        <td>
+          <router-link :to="'/edit/' + book.id" aria-label="Edit book">
+            Edit
+          </router-link>
+          <button>Delete</button>
+        </td>
       </tr>
     </tbody>
   </table>

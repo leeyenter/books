@@ -4,7 +4,7 @@ import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
 import { beforeEach, expect, Mock } from "vitest";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 
-class FormObj {
+export class FormObj {
   constructor(private app: VueWrapper) {}
 
   private input(label: string): DOMWrapper<HTMLInputElement> {

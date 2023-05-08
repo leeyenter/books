@@ -7,7 +7,10 @@ const restHandlers = [
     return res(
       ctx.status(200),
       ctx.json([
-        mockBook({ title: "A Long Obedience" }),
+        mockBook({
+          title: "A Long Obedience",
+          authors: ["Eugene H. Peterson"],
+        }),
         mockBook(),
         mockBook(),
       ])
