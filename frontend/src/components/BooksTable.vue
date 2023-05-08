@@ -31,7 +31,10 @@ const locations = getBookPriceLocations(props.books);
         <td aria-label="title">{{ book.title }}</td>
         <td aria-label="authors">{{ book.authors.join(", ") }}</td>
         <td v-for="loc in locations" data-test="price">
-          {{ formatMoney(book.prices[loc]) }}
+          <template v-if="book.prices">
+            {{ formatMoney(book.prices[loc]) }}
+          </template>
+          <template v-else>-</template>
         </td>
         <td aria-label="fes library">
           {{ formatOptionalBoolean(book.fesLibrary) }}

@@ -1,7 +1,8 @@
 import { Book, mockBook } from "../types/book.ts";
 import BookForm from "./BookForm.vue";
 import { DOMWrapper, mount, VueWrapper } from "@vue/test-utils";
-import { beforeEach, expect } from "vitest";
+import { beforeEach, expect, Mock } from "vitest";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 
 class FormObj {
   constructor(private app: VueWrapper) {}
@@ -19,6 +20,16 @@ class FormObj {
     const button = this.app.findAll("button").find((x) => x.text().match(text));
     expect(button?.exists(), `Expected button with text ${text}`).toBeTruthy();
     return button!;
+  }
+
+  private get fesLibrarySelect() {
+    return this.app.find(
+      '[aria-label="FES library"]'
+    ) as DOMWrapper<HTMLSelectElement>;
+  }
+
+  private get readStatusSelect() {
+    return this.app.find('[aria-label="Read status"]');
   }
 
   get authorInputs() {
@@ -56,15 +67,28 @@ class FormObj {
   }
 
   async clickAddPrice() {
-    const addPriceBtn = this.button(/Add price/);
+    const addPriceBtn = this.button(/Add location/);
     await addPriceBtn.trigger("click");
   }
 
+  async selectFESLibraryValue(value: string) {
+    const option = this.fesLibrarySelect
+      .findAll("option")
+      .find((x) => x.text() === value);
+    expect(option?.exists()).toBeTruthy();
+    await option!.setValue();
+  }
+
+  async selectReadStatusValue(value: string) {
+    const option = this.readStatusSelect
+      .findAll("option")
+      .find((x) => x.text() === value);
+    expect(option?.exists()).toBeTruthy();
+    await option!.setValue();
+  }
+
   expectFESLibraryValue(value: string) {
-    const select = this.app.find(
-      '[aria-label="FES library"]'
-    ) as DOMWrapper<HTMLSelectElement>;
-    expect(select.element.value).toEqual(value);
+    expect(this.fesLibrarySelect.element.value).toEqual(value);
   }
 
   async clickSubmit() {
@@ -74,10 +98,20 @@ class FormObj {
 }
 
 describe("Book Form", () => {
+  let fetch: Mock<any, any>;
+
   const wrapper = (book: Book, locations: string[] = []) =>
     mount(BookForm, {
       props: { book, locations },
+      global: {
+        plugins: [VueQueryPlugin],
+      },
     });
+
+  beforeEach(() => {
+    fetch = vi.fn();
+    global.fetch = fetch;
+  });
 
   it('displays "New book" when passing in with empty props', () => {
     const app = wrapper({ id: "", title: "", authors: [] });
@@ -207,14 +241,20 @@ describe("Book Form", () => {
       const form = new FormObj(app);
       await form.setTitleInput("Preaching");
       await form.setInputValue("Author 1", "Tim Keller");
+
       await form.setInputValue("New price location", "SKS");
       await form.clickAddPrice();
       await form.setInputValue("Price at SKS", "24.30");
 
-      // TODO: set library status
+      await form.selectFESLibraryValue("Present");
+      await form.selectReadStatusValue("Completed");
 
       await form.clickSubmit();
-      // expect form
+
+      expect(fetch).toHaveBeenCalledWith("http://localhost:5000/book/", {
+        method: "POST",
+        body: '{"id":"","title":"Preaching","authors":["Tim Keller"],"fesLibrary":true,"readStatus":"Completed","prices":{"SKS":2430}}',
+      });
     });
   });
 });

@@ -11,6 +11,7 @@ type Book struct {
 	Title      string         `json:"title" firestore:"title"`
 	Authors    []string       `json:"authors" firestore:"authors"`
 	Prices     map[string]int `json:"prices" firestore:"prices,omitempty"`
+	FESLibrary null.Bool      `json:"fesLibrary" firestore:"fesLibrary,omitempty"`
 	BoughtDate null.Time      `json:"boughtDate" firestore:"boughtDate,omitempty"`
 	BoughtType string         `json:"boughtType" firestore:"boughtType,omitempty"`
 	ReadStatus string         `json:"readStatus" firestore:"readStatus,omitempty"`
@@ -25,6 +26,7 @@ func CreateRandom(bought bool) Book {
 			gofakeit.Drink():    gofakeit.Number(2000, 6000),
 			gofakeit.Dog():      gofakeit.Number(5000, 10000),
 		},
+		FESLibrary: null.BoolFrom(gofakeit.Bool()),
 		ReadStatus: gofakeit.RandomString([]string{"Unstarted", "In progress", "Completed"}),
 	}
 

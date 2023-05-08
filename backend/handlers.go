@@ -11,6 +11,7 @@ func getBooks(c *gin.Context) {
 	foundBooks, err := books.GetAll(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusOK, foundBooks)

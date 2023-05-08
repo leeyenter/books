@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Book } from "../types/book.ts";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { addBookMutation } from "../api/api.ts";
+import { useQueryClient } from "@tanstack/vue-query";
 
 const props = defineProps<{
   book: Book;
@@ -11,17 +13,29 @@ const generatePrices = () => {
   let pricesObj: { [location: string]: string } = Object.fromEntries(
     props.locations.map((location) => [location, ""])
   );
-  if (book.value.prices) {
-    for (const [loc, price] of Object.entries(book.value.prices)) {
+  if (props.book.prices) {
+    for (const [loc, price] of Object.entries(props.book.prices)) {
       pricesObj[loc] = (price / 100).toFixed(2);
     }
   }
   return pricesObj;
 };
 
-const book = ref(props.book);
 const prices = ref(generatePrices());
 const newPriceLocation = ref("");
+
+const pricesInCents = computed(() => {
+  let output: { [l: string]: number } = {};
+  for (const [loc, priceStr] of Object.entries(prices.value)) {
+    let priceFloat = parseFloat(priceStr);
+    if (priceFloat > 0) {
+      output[loc] = Math.round(priceFloat * 100);
+    }
+  }
+  return output;
+});
+
+const book = ref(props.book);
 
 const addNewPriceLocation = () => {
   if (newPriceLocation.value === "") return;
@@ -35,7 +49,15 @@ const addAuthor = () => {
   book.value.authors.push("");
 };
 
-const submitForm = () => {};
+const queryClient = useQueryClient();
+const { isLoading, isError, error, isSuccess, mutate } =
+  addBookMutation(queryClient);
+
+const submitForm = () => {
+  console.log("submitting form");
+  book.value.prices = pricesInCents.value;
+  mutate(book.value);
+};
 </script>
 
 <template>
@@ -60,7 +82,7 @@ const submitForm = () => {};
           type="text"
           v-for="index in book.authors.length"
           :key="index"
-          v-model="book.authors[index]"
+          v-model="book.authors[index - 1]"
           :aria-label="`Author ${index}`"
           data-test="author"
         />
@@ -89,7 +111,7 @@ const submitForm = () => {};
         aria-label="New price location"
         v-model="newPriceLocation"
       />
-      <button @click.prevent="addNewPriceLocation">Add price</button>
+      <button @click.prevent="addNewPriceLocation">Add location</button>
     </div>
     <div class="flex flex-row">
       <div class="w-2/12">FES Library:</div>

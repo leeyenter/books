@@ -12,6 +12,10 @@ h1 {
     @apply font-bold text-3xl;
 }
 
+h2 {
+    @apply font-bold text-xl;
+}
+
 input[type=text] {
     @apply border-b-2 border-blue-500;
 }
