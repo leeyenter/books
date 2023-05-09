@@ -68,6 +68,24 @@ var _ = Describe("Books Handlers", func() {
 		Expect(booksFound).To(ContainElement(newBook))
 	})
 
+	It("updates book", func() {
+		editedBook := books.CreateRandom(true)
+		body, _ := json.Marshal(editedBook)
+		r, err := http.NewRequest("POST", "/book/"+unboughtBook.ID, bytes.NewReader(body))
+		Expect(err).To(BeNil())
+
+		router := setupRouter()
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, r)
+		Expect(w.Code).To(Equal(http.StatusOK))
+
+		editedBook.ID = unboughtBook.ID
+		booksFound, err := books.GetAll(context.Background())
+		Expect(err).To(BeNil())
+		Expect(booksFound).To(ContainElement(editedBook))
+		Expect(booksFound).ToNot(ContainElement(unboughtBook))
+	})
+
 	It("sets price for book", func() {
 		source := gofakeit.Vegetable()
 		price := gofakeit.Number(100, 10000)

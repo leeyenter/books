@@ -55,6 +55,11 @@ func Add(ctx context.Context, book *Book) error {
 	return err
 }
 
+func Edit(ctx context.Context, id string, book Book) error {
+	_, err := db.Get().Books().Doc(id).Set(ctx, book)
+	return err
+}
+
 func MarkBought(ctx context.Context, id, boughtType string) error {
 	_, err := db.Get().Books().Doc(id).Update(ctx, []firestore.Update{
 		{

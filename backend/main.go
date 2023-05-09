@@ -26,6 +26,7 @@ func setupRouter() *gin.Engine {
 	book := r.Group("/book")
 	book.GET("/", getBooks)
 	book.POST("/", addBook)
+	book.POST("/:id", editBook)
 	book.POST("/:id/bought", markBookAsBought)
 	book.POST("/:id/price", setBookPrice)
 	book.DELETE("/:id/price", removeBookPrice)

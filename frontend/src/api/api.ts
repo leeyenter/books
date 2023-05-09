@@ -12,7 +12,7 @@ const API = {
     },
     post: async (book: Book) => {
       console.log("POST /book/");
-      return await fetch(`${BACKEND_URL}/book/`, {
+      return await fetch(`${BACKEND_URL}/book/${book.id}`, {
         method: "POST",
         body: JSON.stringify(book),
       });

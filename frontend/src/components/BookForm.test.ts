@@ -241,6 +241,7 @@ describe("Book Form", () => {
       const form = new FormObj(app);
       await form.setTitleInput("Preaching");
       await form.setInputValue("Author 1", "Tim Keller");
+      await form.clickAddAuthor();
 
       await form.setInputValue("New price location", "SKS");
       await form.clickAddPrice();
@@ -254,6 +255,26 @@ describe("Book Form", () => {
       expect(fetch).toHaveBeenCalledWith("http://localhost:5000/book/", {
         method: "POST",
         body: '{"id":"","title":"Preaching","authors":["Tim Keller"],"fesLibrary":true,"readStatus":"Completed","prices":{"SKS":2430}}',
+      });
+    });
+
+    it("can edit an existing book", async () => {
+      const app = wrapper({
+        id: "1",
+        title: "My current title",
+        authors: ["First author"],
+      });
+      const form = new FormObj(app);
+      await form.setTitleInput("My new title");
+      await form.clickAddAuthor();
+      await form.setInputValue("Author 2", "Second author");
+      await form.selectReadStatusValue("In progress");
+
+      await form.clickSubmit();
+
+      expect(fetch).toHaveBeenCalledWith("http://localhost:5000/book/1", {
+        method: "POST",
+        body: '{"id":"1","title":"My new title","authors":["First author","Second author"],"readStatus":"In progress","prices":{}}',
       });
     });
   });

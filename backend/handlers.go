@@ -34,6 +34,24 @@ func addBook(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": book.ID})
 }
 
+func editBook(c *gin.Context) {
+	var book books.Book
+
+	if err := c.ShouldBindJSON(&book); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := c.Param("id")
+	err := books.Edit(c.Request.Context(), id, book)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"id": book.ID})
+}
+
 type markBookAsBoughtPayload struct {
 	BoughtType string `json:"boughtType"`
 }

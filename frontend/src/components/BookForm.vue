@@ -50,12 +50,11 @@ const addAuthor = () => {
 };
 
 const queryClient = useQueryClient();
-const { isLoading, isError, error, isSuccess, mutate } =
-  addBookMutation(queryClient);
+const { mutate } = addBookMutation(queryClient);
 
 const submitForm = () => {
-  console.log("submitting form");
   book.value.prices = pricesInCents.value;
+  book.value.authors = book.value.authors.filter((x) => x.length > 0);
   mutate(book.value);
 };
 </script>
