@@ -63,7 +63,7 @@ const submitForm = () => {
   <h1 v-if="book.id === ''">New book</h1>
   <h1 v-else>Edit book</h1>
 
-  <form>
+  <form @submit.prevent="submitForm">
     <h2>Book details</h2>
     <div class="form-row">
       <div class="w-2/12">Title:</div>
@@ -74,22 +74,24 @@ const submitForm = () => {
         class="flex-1"
       />
     </div>
-    <div class="form-row">
-      <div class="w-2/12">Author(s):</div>
-      <div class="flex-1 flex flex-col">
-        <input
-          type="text"
-          v-for="index in book.authors.length"
-          :key="index"
-          v-model="book.authors[index - 1]"
-          :aria-label="`Author ${index}`"
-          data-test="author"
-        />
-        <button @click.prevent="addAuthor" class="secondary-btn mt-2">
-          Add author
-        </button>
+    <form @submit.prevent="addAuthor">
+      <div class="form-row">
+        <div class="w-2/12">Author(s):</div>
+        <div class="flex-1 flex flex-col">
+          <input
+            type="text"
+            v-for="index in book.authors.length"
+            :key="index"
+            v-model="book.authors[index - 1]"
+            :aria-label="`Author ${index}`"
+            data-test="author"
+          />
+          <button @click.prevent="addAuthor" class="secondary-btn mt-2">
+            Add author
+          </button>
+        </div>
       </div>
-    </div>
+    </form>
     <h2>Availability</h2>
     <div
       v-for="(_, location) in prices"
@@ -106,18 +108,20 @@ const submitForm = () => {
         />
       </div>
     </div>
-    <div class="form-row items-center">
-      <div class="w-2/12">
-        <input
-          type="text"
-          aria-label="New price location"
-          v-model="newPriceLocation"
-        />
+    <form @submit.prevent="addNewPriceLocation">
+      <div class="form-row items-center">
+        <div class="w-2/12">
+          <input
+            type="text"
+            aria-label="New price location"
+            v-model="newPriceLocation"
+          />
+        </div>
+        <button @click.prevent="addNewPriceLocation" class="secondary-btn">
+          Add location
+        </button>
       </div>
-      <button @click.prevent="addNewPriceLocation" class="secondary-btn">
-        Add location
-      </button>
-    </div>
+    </form>
     <div class="form-row">
       <div class="w-2/12">FES Library:</div>
       <div>

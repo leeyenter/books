@@ -30,7 +30,7 @@ const locations = getBookPriceLocations(props.books);
     <tbody>
       <tr v-for="book in props.books" :key="book.id">
         <td aria-label="title">{{ book.title }}</td>
-        <td aria-label="authors">{{ book.authors.join(", ") }}</td>
+        <td aria-label="authors">{{ book.authors?.join(", ") }}</td>
         <template v-for="loc in locations" data-test="price">
           <BookPriceCell :prices="book.prices" :loc="loc" />
         </template>
