@@ -53,8 +53,12 @@ const queryClient = useQueryClient();
 const { mutate } = addBookMutation(queryClient);
 
 const submitForm = () => {
-  book.value.prices = pricesInCents.value;
+  if (book.value.title === "") return;
+
   book.value.authors = book.value.authors.filter((x) => x.length > 0);
+  if (book.value.authors.length === 0) return;
+
+  book.value.prices = pricesInCents.value;
   mutate(book.value);
 };
 </script>

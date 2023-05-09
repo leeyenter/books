@@ -277,5 +277,21 @@ describe("Book Form", () => {
         body: '{"id":"1","title":"My new title","authors":["First author","Second author"],"readStatus":"In progress","prices":{}}',
       });
     });
+
+    it("does not create a book without a title", async () => {
+      const app = wrapper({ id: "", title: "", authors: [""] });
+      const form = new FormObj(app);
+      await form.setInputValue("Author 1", "Tim Keller");
+      await form.clickSubmit();
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it("does not create a book without an author", async () => {
+      const app = wrapper({ id: "", title: "", authors: [""] });
+      const form = new FormObj(app);
+      await form.setTitleInput("My new title");
+      await form.clickSubmit();
+      expect(fetch).not.toHaveBeenCalled();
+    });
   });
 });
