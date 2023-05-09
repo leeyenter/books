@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Book } from "../types/book.ts";
 import {
-  formatMoney,
   formatOptionalBoolean,
   getBookPriceLocations,
 } from "../helpers/books.ts";
+import BookPriceCell from "../subcomponents/BookPriceCell.vue";
 
 const props = defineProps<{
   books: Book[];
@@ -31,13 +31,10 @@ const locations = getBookPriceLocations(props.books);
       <tr v-for="book in props.books" :key="book.id">
         <td aria-label="title">{{ book.title }}</td>
         <td aria-label="authors">{{ book.authors.join(", ") }}</td>
-        <td v-for="loc in locations" data-test="price">
-          <template v-if="book.prices">
-            {{ formatMoney(book.prices[loc]) }}
-          </template>
-          <template v-else>-</template>
-        </td>
-        <td aria-label="fes library">
+        <template v-for="loc in locations" data-test="price">
+          <BookPriceCell :prices="book.prices" :loc="loc" />
+        </template>
+        <td aria-label="fes library" class="text-center">
           {{ formatOptionalBoolean(book.fesLibrary) }}
         </td>
         <td aria-label="owned">{{ book.boughtType ?? "-" }}</td>
