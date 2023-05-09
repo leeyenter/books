@@ -15,7 +15,7 @@ const locations = getBookPriceLocations(props.books);
 
 <template>
   <div v-if="props.books.length === 0">No books found</div>
-  <table v-else>
+  <table v-else class="w-full">
     <thead>
       <tr>
         <th>Title</th>
@@ -43,12 +43,31 @@ const locations = getBookPriceLocations(props.books);
         <td aria-label="owned">{{ book.boughtType ?? "-" }}</td>
         <td aria-label="status">{{ book.readStatus }}</td>
         <td>
-          <router-link :to="'/edit/' + book.id" aria-label="Edit book">
+          <router-link
+            :to="'/edit/' + book.id"
+            aria-label="Edit book"
+            class="secondary-btn"
+          >
             Edit
           </router-link>
-          <button>Delete</button>
+          <button class="secondary-btn">Delete</button>
         </td>
       </tr>
     </tbody>
   </table>
 </template>
+
+<style scoped>
+td,
+th {
+  @apply py-1 px-3;
+}
+
+th {
+  @apply border-b-2;
+}
+
+td {
+  @apply border-b;
+}
+</style>

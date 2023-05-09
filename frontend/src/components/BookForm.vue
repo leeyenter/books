@@ -65,7 +65,7 @@ const submitForm = () => {
 
   <form>
     <h2>Book details</h2>
-    <div class="flex flex-row">
+    <div class="form-row">
       <div class="w-2/12">Title:</div>
       <input
         type="text"
@@ -74,7 +74,7 @@ const submitForm = () => {
         class="flex-1"
       />
     </div>
-    <div class="flex flex-row">
+    <div class="form-row">
       <div class="w-2/12">Author(s):</div>
       <div class="flex-1 flex flex-col">
         <input
@@ -85,13 +85,15 @@ const submitForm = () => {
           :aria-label="`Author ${index}`"
           data-test="author"
         />
-        <button @click.prevent="addAuthor">Add author</button>
+        <button @click.prevent="addAuthor" class="secondary-btn mt-2">
+          Add author
+        </button>
       </div>
     </div>
     <h2>Availability</h2>
     <div
       v-for="(_, location) in prices"
-      class="flex flex-row"
+      class="form-row"
       :aria-label="`price for ${location}`"
     >
       <div class="w-2/12">{{ location }}</div>
@@ -104,15 +106,19 @@ const submitForm = () => {
         />
       </div>
     </div>
-    <div>
-      <input
-        type="text"
-        aria-label="New price location"
-        v-model="newPriceLocation"
-      />
-      <button @click.prevent="addNewPriceLocation">Add location</button>
+    <div class="form-row items-center">
+      <div class="w-2/12">
+        <input
+          type="text"
+          aria-label="New price location"
+          v-model="newPriceLocation"
+        />
+      </div>
+      <button @click.prevent="addNewPriceLocation" class="secondary-btn">
+        Add location
+      </button>
     </div>
-    <div class="flex flex-row">
+    <div class="form-row">
       <div class="w-2/12">FES Library:</div>
       <div>
         <select aria-label="FES library" v-model="book.fesLibrary">
@@ -123,7 +129,7 @@ const submitForm = () => {
       </div>
     </div>
     <h2>Other Details</h2>
-    <div class="flex flex-row">
+    <div class="form-row">
       <div class="w-2/12">Read Status:</div>
       <div>
         <select aria-label="Read status" v-model="book.readStatus">
@@ -133,6 +139,12 @@ const submitForm = () => {
         </select>
       </div>
     </div>
-    <button @click.prevent="submitForm">Add book</button>
+    <button @click.prevent="submitForm" class="primary-btn">Add book</button>
   </form>
 </template>
+
+<style scoped>
+.form-row {
+  @apply flex flex-row mb-2;
+}
+</style>

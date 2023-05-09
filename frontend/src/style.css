@@ -1,21 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;700;800&display=swap');
+
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body, html {
-    font-family: Poppins, Futura, sans-serif;
+    font-family: 'Spectral', serif;
 }
 
 h1 {
-    @apply font-bold text-3xl;
+    @apply font-extrabold text-3xl mb-3;
 }
 
 h2 {
-    @apply font-bold text-xl;
+    @apply font-bold text-xl mt-4 mb-3;
 }
 
 input[type=text] {
-    @apply border-b-2 border-blue-500;
+    @apply border-b border-gray-500 outline-none py-0.5;
+}
+
+select {
+    @apply border border-black rounded p-1;
+}
+
+.btn {
+    @apply px-4 py-2.5 leading-none transition inline-block;
+}
+
+.primary-btn {
+    @apply btn px-5 bg-black rounded text-white hover:bg-gray-700;
+}
+
+.secondary-btn {
+    @apply btn bg-gray-100 hover:bg-gray-200;
+}
+
+.secondary-btn + .secondary-btn {
+    @apply ml-1;
 }

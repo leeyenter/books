@@ -9,6 +9,14 @@ const { isLoading, isError, error } = getBooksQuery();
   <template v-if="isError">Error: {{ error.message }}</template>
   <template v-else>
     <NavBar />
-    <router-view />
+    <div id="body">
+      <router-view />
+    </div>
   </template>
 </template>
+
+<style scoped>
+#body {
+  @apply w-full max-w-screen-xl mx-auto px-4 pb-8;
+}
+</style>
