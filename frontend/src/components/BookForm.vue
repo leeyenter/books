@@ -46,7 +46,11 @@ const addNewPriceLocation = () => {
 };
 
 const addAuthor = () => {
-  book.value.authors.push("");
+  if (!book.value.authors) {
+    book.value.authors = [""];
+  } else {
+    book.value.authors.push("");
+  }
 };
 
 const queryClient = useQueryClient();
@@ -54,6 +58,7 @@ const { mutate } = addBookMutation(queryClient);
 
 const submitForm = () => {
   if (book.value.title === "") return;
+  if (!book.value.authors) return;
 
   book.value.authors = book.value.authors.filter((x) => x.length > 0);
   if (book.value.authors.length === 0) return;
@@ -84,6 +89,7 @@ const submitForm = () => {
         <div class="flex-1 flex flex-col">
           <input
             type="text"
+            v-if="book.authors"
             v-for="index in book.authors.length"
             :key="index"
             v-model="book.authors[index - 1]"

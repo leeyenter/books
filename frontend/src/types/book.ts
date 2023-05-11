@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 export interface Book {
   id: string;
   title: string;
-  authors: string[];
+  authors?: string[];
   prices?: { [source: string]: number };
   fesLibrary?: boolean;
   boughtDate?: string;
