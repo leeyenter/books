@@ -55,6 +55,14 @@ func (d *DB) Books() *firestore.CollectionRef {
 	return d.client.Collection("books-" + d.env)
 }
 
+func (d *DB) AuthSession() *firestore.CollectionRef {
+	return d.client.Collection("auth-session-" + d.env)
+}
+
+func (d *DB) AuthCredential() *firestore.CollectionRef {
+	return d.client.Collection("auth-credential-" + d.env)
+}
+
 func (d *DB) BulkWriter() *firestore.WriteBatch {
 	return d.client.Batch()
 }

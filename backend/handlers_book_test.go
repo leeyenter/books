@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gin-gonic/gin"
+	"github.com/leeyenter/books/backend/auth"
 	"github.com/leeyenter/books/backend/books"
+	"github.com/leeyenter/books/backend/utils"
 	"gopkg.in/guregu/null.v4"
 	"time"
 
@@ -18,10 +20,13 @@ import (
 )
 
 var _ = Describe("Books Handlers", func() {
+	var validJwt string
 	var boughtBook books.Book
 	var unboughtBook books.Book
 
 	BeforeEach(func() {
+		validJwt, _ = auth.CreateJWT(utils.SaltedRemoteIPForTests, time.Minute)
+
 		boughtBook = books.CreateRandom(true)
 		unboughtBook = books.CreateRandom(false)
 
@@ -49,16 +54,15 @@ var _ = Describe("Books Handlers", func() {
 	It("adds book", func() {
 		newBook := books.CreateRandom(true)
 		body, _ := json.Marshal(newBook)
-		r, err := http.NewRequest("POST", "/book/", bytes.NewReader(body))
-		Expect(err).To(BeNil())
-
+		r, _ := http.NewRequest("POST", "/book/", bytes.NewReader(body))
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
 		Expect(w.Code).To(Equal(http.StatusOK))
 
 		var resp map[string]string
-		err = json.NewDecoder(w.Body).Decode(&resp)
+		err := json.NewDecoder(w.Body).Decode(&resp)
 		Expect(err).To(BeNil())
 		newBook.ID = resp["id"]
 
@@ -71,9 +75,8 @@ var _ = Describe("Books Handlers", func() {
 	It("updates book", func() {
 		editedBook := books.CreateRandom(true)
 		body, _ := json.Marshal(editedBook)
-		r, err := http.NewRequest("POST", "/book/"+unboughtBook.ID, bytes.NewReader(body))
-		Expect(err).To(BeNil())
-
+		r, _ := http.NewRequest("POST", "/book/"+unboughtBook.ID, bytes.NewReader(body))
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
@@ -93,7 +96,7 @@ var _ = Describe("Books Handlers", func() {
 
 		body, _ := json.Marshal(gin.H{"source": source, "price": price})
 		r, _ := http.NewRequest("POST", "/book/"+unboughtBook.ID+"/price", bytes.NewReader(body))
-
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
@@ -112,7 +115,7 @@ var _ = Describe("Books Handlers", func() {
 
 		body, _ := json.Marshal(gin.H{"source": removedSource})
 		r, _ := http.NewRequest("DELETE", "/book/"+unboughtBook.ID+"/price", bytes.NewReader(body))
-
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
@@ -129,7 +132,7 @@ var _ = Describe("Books Handlers", func() {
 			"boughtType": unboughtBook.BoughtType,
 		})
 		r, _ := http.NewRequest("POST", "/book/"+unboughtBook.ID+"/bought", bytes.NewReader(body))
-
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)
@@ -156,7 +159,7 @@ var _ = Describe("Books Handlers", func() {
 			"status": boughtBook.ReadStatus,
 		})
 		r, _ := http.NewRequest("PUT", "/book/"+unboughtBook.ID+"/status", bytes.NewReader(body))
-
+		utils.WrapRequestForTest(r, validJwt)
 		router := setupRouter()
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, r)

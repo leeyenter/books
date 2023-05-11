@@ -37,6 +37,6 @@ select {
     @apply btn bg-gray-100 hover:bg-gray-200;
 }
 
-.secondary-btn + .secondary-btn {
+.primary-btn + .primary-btn, .secondary-btn + .secondary-btn {
     @apply ml-1;
 }

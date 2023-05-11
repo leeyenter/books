@@ -1,14 +1,27 @@
 <script setup lang="ts">
 import NavBar from "./components/NavBar.vue";
-import { getBooksQuery } from "./api/api.ts";
-const { isLoading, isError, error } = getBooksQuery();
+import { checkLoginQuery, getBooksQuery } from "./api/api.ts";
+
+const {
+  isLoading: booksIsLoading,
+  isError: booksIsError,
+  error: booksError,
+} = getBooksQuery();
+
+const {
+  data: isLoggedIn,
+  isLoading: authIsLoading,
+  isError: authIsError,
+  error: authError,
+} = checkLoginQuery();
 </script>
 
 <template>
-  <template v-if="isLoading">Loading...</template>
-  <template v-if="isError">Error: {{ error.message }}</template>
+  <template v-if="booksIsLoading || authIsLoading">Loading...</template>
+  <template v-if="booksIsError">Error: {{ booksError.message }}</template>
+  <template v-else-if="authIsError">Error: {{ authError.message }}</template>
   <template v-else>
-    <NavBar />
+    <NavBar :isLoggedIn="isLoggedIn" />
     <div id="body">
       <router-view />
     </div>
